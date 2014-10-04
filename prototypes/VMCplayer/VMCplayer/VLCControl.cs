@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using AxAXVLC;
 
 namespace VMCplayer
 {
@@ -17,12 +18,17 @@ namespace VMCplayer
         }
 
 
+        public AxVLCPlugin2 getVideoCoponent()
+        {
+            return this.axVLCPlugin21;
+        }
+
         public void AddItemToPlaylist(string filename)
         {
             Uri uri = new Uri(filename);
-            if (uri.IsWellFormedOriginalString())
+            if (uri.IsAbsoluteUri)
             {
-                axVLCPlugin21.playlist.add(filename, filename, null);
+                axVLCPlugin21.playlist.add(uri.AbsoluteUri, filename, null);
             }
             else
             {
