@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.IO;
+using log4net;
 
 namespace HTTPListenerTest
 {
     class HttpServer
     {
+        private readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private HttpListener httpListener;
 
@@ -19,21 +21,57 @@ namespace HTTPListenerTest
 
         public HttpServer(string prefix)
         {
-            Uri uri = new Uri(prefix);
-            
-            httpListener = new HttpListener();
-            httpListener.Prefixes.Add(uri.AbsoluteUri);
+            try
+            {
+                prefix = prefix.Trim();
+
+                if ((prefix == null) || prefix.Equals(""))
+                {
+                    log.Error("Invalid Prefix");
+                }
+                else
+                {
+                    log.Info("Valid Prefix");
+                    Uri uri = new Uri(prefix);
+
+                    log.Info("Initialising Http Listener");
+                    httpListener = new HttpListener();
+                    httpListener.Prefixes.Add(uri.AbsoluteUri);
+                }
+            }
+            catch (ArgumentNullException ane)
+            {
+                log.Error(ane.Message, ane);
+            }
+            catch (ArgumentException ae)
+            {
+                log.Error(ae.Message, ae);
+            }
+            catch(PlatformNotSupportedException pnse)
+            {
+                log.Error(pnse.Message, pnse);
+            }
+            catch (ObjectDisposedException ode)
+            {
+                log.Error(ode.Message, ode);
+            }
+            catch (HttpListenerException hle)
+            {
+                log.Error(hle.Message, hle);
+            }
         }
 
 
         public void start()
         {
+            log.Info("Starting Server");
             httpListener.Start();
         }
 
 
         public void stop()
         {
+            log.Info("Stopping Server");
             httpListener.Stop();
         }
 
@@ -42,30 +80,40 @@ namespace HTTPListenerTest
         {
             try
             {
+                log.Info("Initiating Response");
+
                 HttpListenerContext context = httpListener.GetContext();
                 context.Response.ContentLength64 = Convert.ToInt64(Encoding.UTF8.GetByteCount(getResponseMessage()));
                 context.Response.ContentEncoding = Encoding.UTF8;
                 context.Response.ContentType = "text/plain";
                 context.Response.StatusCode = (int)HttpStatusCode.OK;
 
+                log.InfoFormat("Sending Response to {0}", context.Request.RemoteEndPoint);
+                log.InfoFormat("Response content type {0}, Status code {1}", context.Response.ContentType, context.Response.StatusCode);
+                log.Info("Creating Stream");
+                
                 Stream stream = context.Response.OutputStream;
                 StreamWriter writer = new StreamWriter(stream);
+                
+                log.Info("Writing to stream");
+                
                 writer.Write(getResponseMessage());
                 writer.Flush();
                 writer.Close();
-
+                
+                log.Info("Closing Stream");
             }
             catch (ObjectDisposedException ode)
             {
-                //Log Exception
+                log.Error(ode.Message, ode);
             }
             catch (ArgumentNullException ane)
             {
-                //log
+                log.Error(ane.Message, ane);
             }
             catch (ArgumentException ae)
             {
-                //log
+                log.Error(ae.Message, ae);
             }
             
 

@@ -18,9 +18,7 @@ namespace VMCplayer
         public Form1()
         {
             log.Info("Initialising Form");
-            InitializeComponent();
-
-           
+            InitializeComponent();           
         }
 
         private string fileToPlay = @"I:\Family Guy - Season 11\Family Guy S11E11 The Giggity Wife.mkv";
