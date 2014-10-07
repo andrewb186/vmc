@@ -34,7 +34,7 @@ namespace HTTPListenerTest
 
         private void btnReply_Click(object sender, EventArgs e)
         {
-            httpServer.sendResponse();
+            //httpServer.sendResponse();
         }
 
        

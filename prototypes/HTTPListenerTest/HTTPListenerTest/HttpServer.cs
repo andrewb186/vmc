@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using System.IO;
 using log4net;
+using System.Threading;
 
 namespace HTTPListenerTest
 {
@@ -13,6 +14,8 @@ namespace HTTPListenerTest
         private readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private HttpListener httpListener;
+
+        private Thread thread;
 
         public HttpServer() :this(@"http://192.168.0.25:8081")
         {
@@ -65,43 +68,56 @@ namespace HTTPListenerTest
         public void start()
         {
             log.Info("Starting Server");
-            httpListener.Start();
+
+            if (!httpListener.IsListening)
+            {
+                httpListener.Start();
+
+                thread = new Thread(() => sendResponse("hello"));
+                thread.Start();
+            }
         }
 
 
         public void stop()
         {
             log.Info("Stopping Server");
-            httpListener.Stop();
+
+            if (httpListener.IsListening)
+            {
+                httpListener.Stop();
+                httpListener.Close();                
+            }
         }
 
-
-        public void sendResponse()
+        public void sendResponse(string text)
         {
             try
             {
-                log.Info("Initiating Response");
+                while (httpListener.IsListening)
+                {
+                    log.Info("Initiating Response");
+                    HttpListenerContext context = httpListener.GetContext();
+                    context.Response.ContentLength64 = Convert.ToInt64(Encoding.UTF8.GetByteCount(getResponseMessage()));
+                    context.Response.ContentEncoding = Encoding.UTF8;
+                    context.Response.ContentType = "text/plain";
+                    context.Response.StatusCode = (int)HttpStatusCode.OK;
 
-                HttpListenerContext context = httpListener.GetContext();
-                context.Response.ContentLength64 = Convert.ToInt64(Encoding.UTF8.GetByteCount(getResponseMessage()));
-                context.Response.ContentEncoding = Encoding.UTF8;
-                context.Response.ContentType = "text/plain";
-                context.Response.StatusCode = (int)HttpStatusCode.OK;
+                    log.InfoFormat("Sending Response to {0}", context.Request.RemoteEndPoint);
+                    log.InfoFormat("Response content type {0}, Status code {1}", context.Response.ContentType, context.Response.StatusCode);
+                    log.Info("Creating Stream");
 
-                log.InfoFormat("Sending Response to {0}", context.Request.RemoteEndPoint);
-                log.InfoFormat("Response content type {0}, Status code {1}", context.Response.ContentType, context.Response.StatusCode);
-                log.Info("Creating Stream");
-                
-                Stream stream = context.Response.OutputStream;
-                StreamWriter writer = new StreamWriter(stream);
-                
-                log.Info("Writing to stream");
-                
-                writer.Write(getResponseMessage());
-                writer.Flush();
-                writer.Close();
-                
-                log.Info("Closing Stream");
+                    Stream stream = context.Response.OutputStream;
+                    StreamWriter writer = new StreamWriter(stream);
+
+                    log.Info("Writing to stream");
+
+                    writer.Write(getResponseMessage());
+                    writer.Flush();
+                    writer.Close();
+
+                    log.Info("Closing Stream");
+                }
             }
             catch (ObjectDisposedException ode)
             {
@@ -114,6 +130,10 @@ namespace HTTPListenerTest
             catch (ArgumentException ae)
             {
                 log.Error(ae.Message, ae);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message, e);
             }
             
 
