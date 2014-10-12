@@ -37,6 +37,5 @@ namespace HTTPListenerTest
             //httpServer.sendResponse();
         }
 
-       
     }
 }

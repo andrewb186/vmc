@@ -7,6 +7,7 @@ using System.IO;
 using log4net;
 using System.Threading;
 
+
 namespace HTTPListenerTest
 {
     class HttpServer
@@ -16,7 +17,7 @@ namespace HTTPListenerTest
         private HttpListener httpListener;
 
         private Thread thread;
-
+ 
         public HttpServer() :this(@"http://192.168.0.25:8081")
         {
             
@@ -72,7 +73,6 @@ namespace HTTPListenerTest
             if (!httpListener.IsListening)
             {
                 httpListener.Start();
-
                 thread = new Thread(() => sendResponse("hello"));
                 thread.Start();
             }
@@ -96,8 +96,8 @@ namespace HTTPListenerTest
             {
                 while (httpListener.IsListening)
                 {
-                    log.Info("Initiating Response");
                     HttpListenerContext context = httpListener.GetContext();
+                    
                     context.Response.ContentLength64 = Convert.ToInt64(Encoding.UTF8.GetByteCount(getResponseMessage()));
                     context.Response.ContentEncoding = Encoding.UTF8;
                     context.Response.ContentType = "text/plain";
