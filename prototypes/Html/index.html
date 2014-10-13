@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>WebSocket Chat</title>
+    <script type="text/javascript"  src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="websocket.js"></script>
+    <script>
+    	$(document).ready(function(){
+    		websocketConnect();
+    		
+    		$("#btnSend").click(function(){
+				var msg = $("#textInput").val();
+				//alert(msg);
+    			sendTextToWebSocket(msg);
+    		});
+
+    	});
+    </script>
+    
+</head>
+<body>
+    <input type="button" value="Connect" id="btnConnect" />
+    <input type="button" value="Disconnect" id="btnDisconnect" /><br />
+    <input type="text" id="textInput" />
+    <input type="button" value="Send" id="btnSend" /><br />
+    <div id="divData"></div>
+</body>
+</html> 
