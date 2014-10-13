@@ -1,7 +1,5 @@
 
-// ws:// ipaddress and port /  server assigned endpoint / end point name ?id={projectID}
-//var wsUri = "ws://192.168.2.100:5678/hmisocketserver_2/hmisocketserver?id=";
-var wsUri = "ws://192.168.0.25:8081"; ///hmisocketserver_2/hmisocketserver?id=";
+var wsUri = "ws://192.168.0.25:8081"; 
 var websocket;
 
 var isConnectionStateShowing = false;
@@ -17,7 +15,7 @@ function websocketConnect()
 }
 
 function onError(evt) {
-	//alert(evt.data);
+	
 }
 
 
@@ -32,8 +30,8 @@ function onClose(evt) {
 }
 
 //Send text to Server
-function sendTextToWebSocket(json){
-    websocket.send(json);
+function sendTextToWebSocket(msg){
+    websocket.send(msg);
 }
 
 
