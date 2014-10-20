@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using log4net;
-
+using VMCHttpLibrary;
 
 namespace VMC
 {
@@ -19,6 +19,9 @@ namespace VMC
         public Form1()
         {
             InitializeComponent();
+            log.Info("Initializing");
+
+            HttpServer c = new HttpServer();
         }
 
     }

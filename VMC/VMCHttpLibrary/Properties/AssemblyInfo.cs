@@ -1,17 +1,16 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using log4net;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("VMC")]
-[assembly: AssemblyDescription("VLC based Media Center")]
+[assembly: AssemblyTitle("VMCHttpLibrary")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Andrew Brincat")]
-[assembly: AssemblyProduct("VMC")]
-[assembly: AssemblyCopyright("Copyright © Andrew Brincat  2014")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("VMCHttpLibrary")]
+[assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -21,7 +20,7 @@ using log4net;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("75daa905-69ab-457f-8bfd-82755828be9e")]
+[assembly: Guid("e62aa4ef-c2eb-4888-9ba8-50ffb9e586d1")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -35,6 +34,3 @@ using log4net;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("0.0.1")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-
-//Log4net
-[assembly: log4net.Config.XmlConfigurator(ConfigFile = "app.config", Watch = true)]
