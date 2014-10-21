@@ -15,13 +15,13 @@ namespace VMC
     {
 
         private readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-       
+
         public Form1()
         {
             InitializeComponent();
             log.Info("Initializing");
 
-            HttpServer c = new HttpServer();
+            HttpServer c = new HttpServer("localhost", 58081);
         }
 
     }
