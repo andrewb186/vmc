@@ -21,7 +21,9 @@ namespace VMC
             InitializeComponent();
             log.Info("Initializing");
 
-            HttpServer c = new HttpServer("localhost", 58081);
+            HttpServer c = new HttpServer("http://192.168.2.10", 8081);
+            c.Start();
+            c.Run();
         }
 
     }
