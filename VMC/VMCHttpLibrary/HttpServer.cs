@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using log4net;
 using System.Net;
-using VMCHttpLibrary.Model;
+//using VMCHttpLibrary.Model;
 using VMCHttpLibrary.Controller;
 using System.IO;
+using VMCHttpLibrary.Objects;
 
 namespace VMCHttpLibrary
 {
@@ -69,35 +70,36 @@ namespace VMCHttpLibrary
                 HttpListenerRequest requestContext = httpContext.Request;
                 HttpListenerResponse responseContext = httpContext.Response;
 
-                HttpServerRequestModel requestModel = ProcessRequest(requestContext);
-                char [] buffer = LoadFile(requestModel);
-                SendResponse(buffer, responseContext);
+                HttpServerRequestObject requestModel = ProcessRequest(requestContext);
+                HttpServerResponseObject responseObject = LoadFile(requestModel);
+                SendResponse(responseObject, responseContext);
             }
         }
 
 
-        private HttpServerRequestModel ProcessRequest(HttpListenerRequest request)
+        private HttpServerRequestObject ProcessRequest(HttpListenerRequest request)
         {
-            HttpServerRequestModel _request = new HttpServerRequestModel(request);
+            HttpServerRequestObject _request = new HttpServerRequestObject(request);
             return _request;
         }
 
-        private char [] LoadFile(HttpServerRequestModel httpServerRequestModel)
+        private HttpServerResponseObject LoadFile(HttpServerRequestObject httpServerRequestModel)
         {
             HttpServerLoadFile file = new HttpServerLoadFile(httpServerRequestModel);
-            return file.loadFile();
+            file.loadFile();
+            return file.ResponseObject;
         }
 
 
-        private void SendResponse(char [] buffer, HttpListenerResponse responseContext)
+        private void SendResponse(HttpServerResponseObject responseObject, HttpListenerResponse responseContext)
         {
-            responseContext.ContentLength64 = Convert.ToInt64(Encoding.UTF8.GetByteCount(buffer));
-            responseContext.ContentEncoding = Encoding.UTF8;
-            responseContext.ContentType = "text/html";
-            responseContext.StatusCode = (int) HttpStatusCode.OK;
+            responseContext.ContentLength64 = responseObject.ContentLength;
+            responseContext.ContentEncoding = responseObject.EncodingType;
+            responseContext.ContentType = responseObject.ContentType;
+            responseContext.StatusCode = (int)responseObject.StatusCode;
 
             StreamWriter writer = new StreamWriter(responseContext.OutputStream);
-            writer.Write(buffer);
+            writer.Write(responseObject.Data);
             writer.Flush();
             writer.Close();
         }

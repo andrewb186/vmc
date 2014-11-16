@@ -8,9 +8,9 @@ using System.Web;
 using log4net;
 using System.Collections.Specialized;
 
-namespace VMCHttpLibrary.Model
+namespace VMCHttpLibrary.Objects
 {
-    class HttpServerRequestModel
+    class HttpServerRequestObject
     {
         private readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -37,15 +37,15 @@ namespace VMCHttpLibrary.Model
         }
 
 
-        private List<HttpServerQueryParametersModel> _QueryParameters;
-        public List<HttpServerQueryParametersModel> QueryParameters
+        private List<HttpServerQueryParametersObject> _QueryParameters;
+        public List<HttpServerQueryParametersObject> QueryParameters
         {
             get { return _QueryParameters; }
             set { _QueryParameters = value; }
         }
 
 
-        public HttpServerRequestModel(HttpListenerRequest request)
+        public HttpServerRequestObject(HttpListenerRequest request)
         {
             this._Path = request.Url.AbsolutePath;
             log.Info("Requested Path: " + this._Path);
@@ -60,9 +60,9 @@ namespace VMCHttpLibrary.Model
         }
 
 
-        private List<HttpServerQueryParametersModel> GetQueryParameters(string sQuery)
+        private List<HttpServerQueryParametersObject> GetQueryParameters(string sQuery)
         {
-            List<HttpServerQueryParametersModel> temp = new List<HttpServerQueryParametersModel>();
+            List<HttpServerQueryParametersObject> temp = new List<HttpServerQueryParametersObject>();
 
             try
             {
@@ -75,7 +75,7 @@ namespace VMCHttpLibrary.Model
                 {
                     log.Info("Initializing Key Value object");
                     log.DebugFormat("{0}={1}", key, c.Get(key));
-                    temp.Add(new HttpServerQueryParametersModel(key, c.Get(key)));
+                    temp.Add(new HttpServerQueryParametersObject(key, c.Get(key)));
                 }
             }
             catch (ArgumentNullException e)

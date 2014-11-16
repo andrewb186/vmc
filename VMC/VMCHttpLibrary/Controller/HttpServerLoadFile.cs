@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using VMCHttpLibrary.Model;
+//using VMCHttpLibrary.Model;
 using log4net;
 using System.IO;
+using VMCHttpLibrary.Objects;
 
 namespace VMCHttpLibrary.Controller
 {
@@ -14,21 +15,31 @@ namespace VMCHttpLibrary.Controller
 
         //Ecapsulate into an object
         //======
-        private string fileName;
-        private string responseContentType;
-        private string fileExtension;
+        //private string fileName;
+        //private string responseContentType;
+        //private string fileExtension;
         //include field / property for error handling
+        //Status Code
         //======
+
+        private HttpServerResponseObject _responseObject = new HttpServerResponseObject();
+        public HttpServerResponseObject ResponseObject
+        {
+            get { return _responseObject; }
+            set { _responseObject = value; }
+        }
         
+
         private string fullFilePath;
 
-        public HttpServerLoadFile(HttpServerRequestModel requestObject)
+
+        public HttpServerLoadFile(HttpServerRequestObject requestObject)
         {
             if (requestObject.Path.Equals(@"/"))
             {
-                this.fileName = @"\index";
-                this.responseContentType = "text/html";
-                this.fileExtension = ".html";
+                this._responseObject.Filname = @"\index";
+                this._responseObject.ContentType = "text/html";
+                this._responseObject.FileExtension = ".html";
             }
             else
             {
@@ -47,71 +58,75 @@ namespace VMCHttpLibrary.Controller
             }
         }
 
-        private void setWithFileExtension(HttpServerRequestModel requestObject)
+        private void setWithFileExtension(HttpServerRequestObject requestObject)
         {
             log.Info("Getting filename");
-            this.fileName = Path.GetDirectoryName(requestObject.Path) + @"\"+ Path.GetFileNameWithoutExtension(requestObject.Path);
+            this.ResponseObject.Filname = Path.GetDirectoryName(requestObject.Path) + @"\" + Path.GetFileNameWithoutExtension(requestObject.Path);
             
             log.Info("Getting file extension");
-            this.fileExtension = Path.GetExtension(requestObject.Path);
+            this.ResponseObject.FileExtension = Path.GetExtension(requestObject.Path);
 
             log.Info("Setting Content-Type");
-            switch (fileExtension.ToLower())
+            switch (this.ResponseObject.FileExtension.ToLower())
             {
                 case ".js":
-                    this.responseContentType = "application/javascript";
+                    this.ResponseObject.ContentType = "application/javascript";
                     log.Info("Content-type set to: application/javascript");
                     break;
                 case ".css":
-                    this.responseContentType = "text/css";
+                    this.ResponseObject.ContentType = "text/css";
                     log.Info("Content-type set to: text/css");
                     break;
             }
         }
 
-        private void setWithoutFileExtension(HttpServerRequestModel requestObject)
+        private void setWithoutFileExtension(HttpServerRequestObject requestObject)
         {
             log.Info("Getting filename");
-            this.fileName = @"\" + Path.GetFileName(requestObject.Path);
+            this.ResponseObject.Filname = @"\" + Path.GetFileName(requestObject.Path);
 
             log.Info("Getting Content-Type");
-            this.responseContentType = requestObject.ResponseContentType;
+            this.ResponseObject.ContentType = requestObject.ResponseContentType;
 
             log.Info("Setting file extension");
-            switch (this.responseContentType.ToLower())
+            switch (this.ResponseObject.ContentType.ToLower())
             {
                 case "text/html":
-                    this.fileExtension = ".html";
+                    this.ResponseObject.FileExtension = ".html";
                     log.Info("File extension set to: html");
                     break;
                 case "application/json":
-                    this.fileExtension = ".json";
+                    this.ResponseObject.FileExtension = ".json";
                     log.Info("File extension set to: json");
                     break;
                 case "application/xml":
-                    this.fileExtension = ".xml";
+                    this.ResponseObject.FileExtension = ".xml";
                     log.Info("File extension set to: xml");
                     break;
                 default:
                     log.Info("Invalid mime type. Setting to default type [text/html]");
-                    fileExtension = ".html";
+                    this.ResponseObject.FileExtension = ".html";
                     break;
             }     
         }
 
        
-
-        public char [] loadFile()
+        public void loadFile()
         {
             char[] buffer = null;
             int count = 0;
 
-            string _filePath =  AppDomain.CurrentDomain.BaseDirectory + @"html" + fileName + fileExtension;
+            string _filePath =  AppDomain.CurrentDomain.BaseDirectory + @"html" + this.ResponseObject.Filname + this.ResponseObject.FileExtension;
 
             if (File.Exists(_filePath) == false)
             {
                 _filePath = AppDomain.CurrentDomain.BaseDirectory + @"html\error.html";
                 //set not found status code
+                this.ResponseObject.StatusCode = System.Net.HttpStatusCode.NotFound;
+            }
+            else
+            {
+                this.ResponseObject.StatusCode = System.Net.HttpStatusCode.OK;
             }
 
 
@@ -133,7 +148,9 @@ namespace VMCHttpLibrary.Controller
                 log.Error(e.Message, e);
             }
 
-            return buffer;            
+            //return buffer;
+            this.ResponseObject.Data = buffer;
+            this.ResponseObject.ContentLength = Convert.ToInt64(Encoding.UTF8.GetByteCount(buffer));
         }
         
 

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace VMCHttpLibrary.Model
+namespace VMCHttpLibrary.Objects
 {
-    class HttpServerQueryParametersModel
+    class HttpServerQueryParametersObject
     {
 
         private string _Key;
@@ -23,7 +23,7 @@ namespace VMCHttpLibrary.Model
             set { _Value = value; }
         }
 
-        public HttpServerQueryParametersModel(string key, string value)
+        public HttpServerQueryParametersObject(string key, string value)
         {
             if ((key == null) || (value == null))
             {

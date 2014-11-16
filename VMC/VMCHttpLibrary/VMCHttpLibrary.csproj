@@ -46,8 +46,9 @@
   <ItemGroup>
     <Compile Include="Controller\HttpServerLoadFile.cs" />
     <Compile Include="HttpServer.cs" />
-    <Compile Include="Model\HttpServerQueryParametersModel.cs" />
-    <Compile Include="Model\HttpServerRequestModel.cs" />
+    <Compile Include="Objects\HttpServerQueryParametersObject.cs" />
+    <Compile Include="Objects\HttpServerRequestObject.cs" />
+    <Compile Include="Objects\HttpServerResponseObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
